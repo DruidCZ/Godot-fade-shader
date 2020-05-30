@@ -1,0 +1,25 @@
+shader_type canvas_item;
+render_mode unshaded;
+
+uniform float cutoff : hint_range(0.0,1.0);
+uniform float smooth_size : hint_range(0.0,1.0);
+uniform float wave_speed_x : hint_range(0.0,100.0);
+uniform float wave_speed_y : hint_range(0.0,100.0);
+uniform sampler2D mask : hint_albedo;
+
+//Randomness
+
+//Wave speed
+void vertex()
+{
+	VERTEX.x += cos(TIME + VERTEX.x + VERTEX.y) * wave_speed_x;
+	VERTEX.y += sin(TIME + VERTEX.y + VERTEX.y) * wave_speed_y;
+}
+
+//Cutoff and smooth size
+void fragment()
+{
+	float value = texture(mask,UV).r;
+	float alpha = smoothstep(cutoff, cutoff + smooth_size, value * (1.0 - smooth_size) + smooth_size);
+	COLOR = vec4(COLOR.rgb, alpha);	
+}
